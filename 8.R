@@ -1,0 +1,225 @@
+
+
+
+
+setwd("D:/Rworkplace")
+rm(list = ls())
+library(ggplot2)
+library(RCurl)
+library(plyr)
+library(jsonlite)
+library(reshape2)
+library(scales)
+
+#############
+
+uri_loan <- 'http://172.18.32.14:8080/ncc-oms/loanapply/list'
+
+
+handle <-
+  getCurlHandle(
+    httpheader = list(
+      Accept = 'application/json, text/javascript, */*; q=0.01',
+      'Accept-Ecoding' = 'gzip, deflate',
+      'Accept-Language' = 'zh-CN,zh;q=0.9',
+      Connection = 'keep-alive',
+      # 'Content-Length' = '',
+      'Content-Type' = 'application/x-www-form-urlencoded; charset=UTF-8',
+      Cookie = 'JSESSIONID=FEF280A8462DDE31D8E397D4AD75BFB7; theme=theme_base; userName=%E6%9D%8E%E9%95%BF%E5%85%B4; token=8617ea3a5690ba4c00fd318fe4c0d964; userId=s00580; userType=CBUSER',
+      Referer = 'http://172.18.32.14:8080/ncc-oms/pbcapply/pbcApplyPage?token=a25b085949531e494c422dccc17638b6&userId=s00580&userType=CBUSER&userName=%E6%9D%8E%E9%95%BF%E5%85%B4',
+      Host = '172.18.32.14:8080',
+      'X-Requested-With' = 'XMLHttpRequest'
+    )
+  )
+#############
+
+
+getdata <- function(uri, handle) {
+  loan <- c(
+    'draw'='1',
+    'columns[0][data]'='loanId',
+    'columns[0][name]'='',
+    'columns[0][searchable]'='TRUE',
+    'columns[0][orderable]'='FALSE',
+    'columns[0][search][value]'='',
+    'columns[0][search][regex]'='FALSE',
+    'columns[1][data]'='capitalSeqNo',
+    'columns[1][name]'='',
+    'columns[1][searchable]'='TRUE',
+    'columns[1][orderable]'='FALSE',
+    'columns[1][search][value]'='',
+    'columns[1][search][regex]'='FALSE',
+    'columns[2][data]'='custNo',
+    'columns[2][name]'='',
+    'columns[2][searchable]'='TRUE',
+    'columns[2][orderable]'='FALSE',
+    'columns[2][search][value]'='',
+    'columns[2][search][regex]'='FALSE',
+    'columns[3][data]'='custName',
+    'columns[3][name]'='',
+    'columns[3][searchable]'='TRUE',
+    'columns[3][orderable]'='FALSE',
+    'columns[3][search][value]'='',
+    'columns[3][search][regex]'='FALSE',
+    'columns[4][data]'='capitalCode',
+    'columns[4][name]'='',
+    'columns[4][searchable]'='TRUE',
+    'columns[4][orderable]'='FALSE',
+    'columns[4][search][value]'='',
+    'columns[4][search][regex]'='FALSE',
+    'columns[5][data]'='capSubCode',
+    'columns[5][name]'='',
+    'columns[5][searchable]'='TRUE',
+    'columns[5][orderable]'='FALSE',
+    'columns[5][search][value]'='',
+    'columns[5][search][regex]'='FALSE',
+    'columns[6][data]'='prodSubType',
+    'columns[6][name]'='',
+    'columns[6][searchable]'='TRUE',
+    'columns[6][orderable]'='FALSE',
+    'columns[6][search][value]'='',
+    'columns[6][search][regex]'='FALSE',
+    'columns[7][data]'='loanLimit',
+    'columns[7][name]'='',
+    'columns[7][searchable]'='TRUE',
+    'columns[7][orderable]'='FALSE',
+    'columns[7][search][value]'='',
+    'columns[7][search][regex]'='FALSE',
+    'columns[8][data]'='loanTerm',
+    'columns[8][name]'='',
+    'columns[8][searchable]'='TRUE',
+    'columns[8][orderable]'='FALSE',
+    'columns[8][search][value]'='',
+    'columns[8][search][regex]'='FALSE',
+    'columns[9][data]'='loanBankAccountNo',
+    'columns[9][name]'='',
+    'columns[9][searchable]'='TRUE',
+    'columns[9][orderable]'='FALSE',
+    'columns[9][search][value]'='',
+    'columns[9][search][regex]'='FALSE',
+    'columns[10][data]'='loanBankCode',
+    'columns[10][name]'='',
+    'columns[10][searchable]'='TRUE',
+    'columns[10][orderable]'='FALSE',
+    'columns[10][search][value]'='',
+    'columns[10][search][regex]'='FALSE',
+    'columns[11][data]'='loanBankCardType',
+    'columns[11][name]'='',
+    'columns[11][searchable]'='TRUE',
+    'columns[11][orderable]'='FALSE',
+    'columns[11][search][value]'='',
+    'columns[11][search][regex]'='FALSE',
+    'columns[12][data]'='capLoanResult',
+    'columns[12][name]'='',
+    'columns[12][searchable]'='TRUE',
+    'columns[12][orderable]'='FALSE',
+    'columns[12][search][value]'='',
+    'columns[12][search][regex]'='FALSE',
+    'columns[13][data]'='status',
+    'columns[13][name]'='',
+    'columns[13][searchable]'='TRUE',
+    'columns[13][orderable]'='FALSE',
+    'columns[13][search][value]'='',
+    'columns[13][search][regex]'='FALSE',
+    'columns[14][data]'='stepStatus',
+    'columns[14][name]'='',
+    'columns[14][searchable]'='TRUE',
+    'columns[14][orderable]'='FALSE',
+    'columns[14][search][value]'='',
+    'columns[14][search][regex]'='FALSE',
+    'columns[15][data]'='responseCode',
+    'columns[15][name]'='',
+    'columns[15][searchable]'='TRUE',
+    'columns[15][orderable]'='FALSE',
+    'columns[15][search][value]'='',
+    'columns[15][search][regex]'='FALSE',
+    'columns[16][data]'='responseInfo',
+    'columns[16][name]'='',
+    'columns[16][searchable]'='TRUE',
+    'columns[16][orderable]'='FALSE',
+    'columns[16][search][value]'='',
+    'columns[16][search][regex]'='FALSE',
+    'columns[17][data]'='createDatetime',
+    'columns[17][name]'='',
+    'columns[17][searchable]'='TRUE',
+    'columns[17][orderable]'='TRUE',
+    'columns[17][search][value]'='',
+    'columns[17][search][regex]'='FALSE',
+    'columns[18][data]'='requestDatetime',
+    'columns[18][name]'='',
+    'columns[18][searchable]'='TRUE',
+    'columns[18][orderable]'='TRUE',
+    'columns[18][search][value]'='',
+    'columns[18][search][regex]'='FALSE',
+    'columns[19][data]'='resultResponseDatetime',
+    'columns[19][name]'='',
+    'columns[19][searchable]'='TRUE',
+    'columns[19][orderable]'='TRUE',
+    'columns[19][search][value]'='',
+    'columns[19][search][regex]'='FALSE',
+    'columns[20][data]'='updateDatetime',
+    'columns[20][name]'='',
+    'columns[20][searchable]'='TRUE',
+    'columns[20][orderable]'='TRUE',
+    'columns[20][search][value]'='',
+    'columns[20][search][regex]'='FALSE',
+    'columns[21][data]'='statusRemark',
+    'columns[21][name]'='',
+    'columns[21][searchable]'='TRUE',
+    'columns[21][orderable]'='FALSE',
+    'columns[21][search][value]'='',
+    'columns[21][search][regex]'='FALSE',
+    'columns[22][data]'='remark',
+    'columns[22][name]'='',
+    'columns[22][searchable]'='TRUE',
+    'columns[22][orderable]'='FALSE',
+    'columns[22][search][value]'='',
+    'columns[22][search][regex]'='FALSE',
+    'order[0][column]'='17',
+    'order[0][dir]'='desc',
+    'order[1][column]'='18',
+    'order[1][dir]'='desc',
+    'order[2][column]'='19',
+    'order[2][dir]'='desc',
+    'order[3][column]'='20',
+    'order[3][dir]'='desc',
+    'start'='15000',
+    'length'='5000',
+    'search[value]'='',
+    'search[regex]'='FALSE',
+    'loanId'='',
+    'custNo'='',
+    'capitalSeqNo'='',
+    'loanBankCode'='',
+    'prodSubType'='',
+    'capitalCode'='YCXT',
+    'capSubCode'='XT18092901',
+    'status'='90',
+    'stepStatus'='',
+    'responseInfo'='',
+    'remark'='',
+    'startCreateDatetime'='2018-09-26 17:24:23',
+    'endCreateDatetime'='2018-10-10 17:26:00',
+    'startRequestDatetime'='',
+    'endRequestDatetime'='',
+    'startResultResponseDatetime'='',
+    'endResultResponseDatetime'='',
+    'capLoanResult'='',
+    'statusRemark'=''
+  )
+  res <- postForm(
+    uri = uri,
+    style = 'POST',
+    curl = handle,
+    .params = loan
+  )
+  return(res)
+}
+loan <- data.frame()
+
+get_res <- getdata( uri_loan, handle)
+json_result <- fromJSON(get_res)
+total <- json_result$total
+tmp <- json_result$rows
+loan <- rbind(loan, tmp)
+
