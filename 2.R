@@ -5,7 +5,7 @@ library(jsonlite)
 library(reshape2)
 library(scales)
 mainpath<-"D:/Rworkplace"##存储路径
-date<-seq(from='20181011',to='20181017',by=1)
+date<-seq(from='20181012',to='20181018',by=1)
 result<-data.frame()
 for (i in as.character(date)) {
   result <- rbind(result,read.csv(paste(mainpath,"/hist_data/",format(as.Date(i,format='%Y%m%d'),format='%Y%m%d'),"-",format(as.Date(i,format='%Y%m%d')+1,format='%Y%m%d'),"-1.csv",sep = '')

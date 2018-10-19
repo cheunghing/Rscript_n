@@ -5,9 +5,9 @@ library(jsonlite)
 library(reshape2)
 library(scales)
 mainpath<-"D:/Rworkplace"##存储路径
-start_time <- '2018-10-17 00:00:00'
+start_time <- '2018-10-18 00:00:00'
 end_time <-
-  '2018-10-18 00:00:00'  ####format(Sys.time(), format = '%Y-%m-%d+%H:%M:%S')  #######
+  '2018-10-19 00:00:00'  ####format(Sys.time(), format = '%Y-%m-%d+%H:%M:%S')  #######
 loop_time <- NA
 start_num <- 0
 length <- 5000
@@ -22,7 +22,7 @@ handle <-
       Connection = 'keep-alive',
       # 'Content-Length' = '',
       'Content-Type' = 'application/x-www-form-urlencoded; charset=UTF-8',
-      Cookie = 'JSESSIONID=9D08B74A7E7C0CBFB007CECA1FEC9C30; theme=theme_base; token=bce05e671a42035b1897ecd2b30ba665; userId=s00580; userType=CBUSER; userName=%E6%9D%8E%E9%95%BF%E5%85%B4',
+      Cookie = 'JSESSIONID=69A2DAD7823024CCE9AE5EE99AFC339A; theme=theme_base; token=2819b3c20fcbadfea58b5f4a0b8c66fd; userId=s00580; userType=CBUSER; userName=%E6%9D%8E%E9%95%BF%E5%85%B4',
       Referer = 'http://172.18.32.14:8080/ncc-oms/repayapply/repayApplyPage?token=a25b085949531e494c422dccc17638b6&userId=s00580&userType=CBUSER&userName=%E6%9D%8E%E9%95%BF%E5%85%B4',
       Host = '172.18.32.14:8080',
       'X-Requested-With' = 'XMLHttpRequest'
@@ -342,6 +342,8 @@ res_ag[res_ag$Group.2 == 'XYXJ', ]$Group.2 <- '兴业消金'
 res_ag[res_ag$Group.2 == 'BXBK', ]$Group.2 <- '百信银行'
 res_ag[res_ag$Group.2 == 'FOTIC', ]$Group.2 <- '外贸信托'
 res_ag[res_ag$Group.2 == 'SZYH', ]$Group.2 <- '苏州银行'
+res_ag[res_ag$Group.2 == 'YNXT', ]$Group.2 <- '云南信托'
+
 
 
 
@@ -369,6 +371,8 @@ res_ag_c[res_ag_c$Group.2 == 'XYXJ', ]$Group.2 <- '兴业消金'
 res_ag_c[res_ag_c$Group.2 == 'BXBK', ]$Group.2 <- '百信银行'
 res_ag_c[res_ag_c$Group.2 == 'FOTIC', ]$Group.2 <- '外贸信托'
 res_ag_c[res_ag_c$Group.2 == 'SZYH', ]$Group.2 <- '苏州银行'
+res_ag_c[res_ag_c$Group.2 == 'YNXT', ]$Group.2 <- '云南信托'
+
 
 
 

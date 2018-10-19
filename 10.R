@@ -1,8 +1,11 @@
 result<-data.frame()
 for (i in dir(path = "D:/Rworkplace/hist_data_all")[37]) {
-  cat(i,'\n')
-  result <- rbind(result,read.csv(paste("D:/Rworkplace/hist_data_all/",i,sep = '')
-                                  ,stringsAsFactors=FALSE))
+  cat(i, '\n')
+  result <-
+    rbind(result,
+          read.csv(
+            paste("D:/Rworkplace/hist_data_all/", i, sep = ''),
+            stringsAsFactors = FALSE,colClasses = list(bankCode="character")))
 }
 cacu_fee <- function(df_t) {
   cat(1)
@@ -35,6 +38,8 @@ cacu_fee <- function(df_t) {
   df[which(df$channelId == 'BAOFOO' &df$bankCode == '03080000' &df$transAmt >= 5000 | df$channelId == 'TAT'), ]$fee <- 1.7
   df[which(df$channelId == 'CPCN' &df$bankCode == '03080000' | df$channelId == 'TAT'), ]$fee <-df[which(df$channelId == 'CPCN' &
                                                                                                           df$bankCode == '03080000' |df$channelId == 'TAT'), ]$transAmt * 0.002
+  df[which(df$channelId == 'CPCN' &df$bankCode == '01040000' | df$channelId == 'TAT'), ]$fee <-df[which(df$channelId == 'CPCN' &
+                                                                                                          df$bankCode == '01040000' |df$channelId == 'TAT'), ]$transAmt * 0.002
   df[which(df$channelId == 'BILL99' &df$bankCode == '01050000' &df$transAmt < 5000 | df$channelId == 'TAT'), ]$fee <- 1.4
   df[which(df$channelId == 'BILL99' &df$bankCode == '01050000' &df$transAmt >= 5000 | df$channelId == 'TAT'), ]$fee <- 1.8
   df[which(df$channelId == 'BILL99' &df$bankCode != '01050000' &df$transAmt >= 1000 & df$transAmt < 5000| df$channelId == 'TAT'), ]$fee <- 1.4

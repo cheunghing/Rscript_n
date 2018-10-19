@@ -8,11 +8,13 @@ library(reshape2)
 library(scales)
 
 #############
+mainpath<-"D:/Rworkplace"##存储路径
+
 result <- data.frame()
 
 
-start_time<-'2018-10-17'
-end_time<-'2018-10-17'
+start_time<-'2018-10-18'
+end_time<-'2018-10-18'
 
 page <- 1
 row <- 5000
@@ -28,7 +30,7 @@ handle <-
       Connection = 'keep-alive',
       # 'Content-Length' = '',
       'Content-Type' = 'application/x-www-form-urlencoded; charset=UTF-8',
-      Cookie = 'JSESSIONID=70658EB0DC708FB8B399A3A411138043; theme=theme_base; token=2fe7babb3578403b4d7ecf013c37ab71; userId=s00580; userType=CBUSER; userName=%E6%9D%8E%E9%95%BF%E5%85%B4',
+      Cookie = 'JSESSIONID=69A2DAD7823024CCE9AE5EE99AFC339A; theme=theme_base; token=2819b3c20fcbadfea58b5f4a0b8c66fd; userId=s00580; userType=CBUSER; userName=%E6%9D%8E%E9%95%BF%E5%85%B4',
       Referer = 'http://172.18.32.14:8080/ncc-oms/pbcapply/pbcApplyPage?token=a25b085949531e494c422dccc17638b6&userId=s00580&userType=CBUSER&userName=%E6%9D%8E%E9%95%BF%E5%85%B4',
       Host = '172.18.32.14:8080',
       'X-Requested-With' = 'XMLHttpRequest'
@@ -170,7 +172,28 @@ bind_res_deb <-
         ))
 names(bind_res_deb)<-c('银行','卡类型','验卡渠道','要素验证成功（未绑定）','要素验证成功（已绑定）','验证失败','要素验证成功(已绑定)率','要素验证成功(未绑定)率','验证失败率')
 
-
+write.table(
+  bind_res_cre,
+  file = paste(
+    mainpath,"/table/",
+    gsub('-', '', substr(start_time, 1, 10)),
+    "绑卡-信用卡.csv",
+    sep = ''
+  ),
+  sep = ',',
+  row.names = F
+)
+write.table(
+  bind_res_deb,
+  file = paste(
+    mainpath,"/table/",
+    gsub('-', '', substr(start_time, 1, 10)),
+    "绑卡-借记卡.csv",
+    sep = ''
+  ),
+  sep = ',',
+  row.names = F
+)
 
 
 
