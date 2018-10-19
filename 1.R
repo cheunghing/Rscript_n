@@ -8,9 +8,9 @@ library(scales)
 mainpath<-"D:/Rworkplace"##存储路径
 setwd(mainpath)
 trans_type <- '1'  ##1实时 4批量
-start_time <- '2018-10-19+00:00:00'
+start_time <- '2018-10-18+00:00:00'
 end_time <-
-  '2018-10-20+00:00:00'  ####format(Sys.time(), format = '%Y-%m-%d+%H:%M:%S')  #######
+  '2018-10-19+00:00:00'  ####format(Sys.time(), format = '%Y-%m-%d+%H:%M:%S')  #######
 loop_time <- NA
 start_num <- 0
 length <- 5000
