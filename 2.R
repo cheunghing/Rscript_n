@@ -5,7 +5,9 @@ library(jsonlite)
 library(reshape2)
 library(scales)
 mainpath<-"D:/Rworkplace"##存储路径
-date<-seq(from='20181012',to='20181018',by=1)
+normal_fail <-
+  c('.*余额.*不足.*', '.*额度不足.*', '订单关闭成功', '订单未支付', '订单已关闭')
+date<-seq(from='20181019',to='20181025',by=1)
 result<-data.frame()
 for (i in as.character(date)) {
   result <- rbind(result,read.csv(paste(mainpath,"/hist_data/",format(as.Date(i,format='%Y%m%d'),format='%Y%m%d'),"-",format(as.Date(i,format='%Y%m%d')+1,format='%Y%m%d'),"-1.csv",sep = '')
