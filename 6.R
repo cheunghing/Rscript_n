@@ -22,7 +22,7 @@ handle <-
       Connection = 'keep-alive',
       # 'Content-Length' = '',
       'Content-Type' = 'application/x-www-form-urlencoded; charset=UTF-8',
-      Cookie = 'JSESSIONID=EABF05776D19DE9BE50FE3C7C25269AB; theme=theme_base; token=27271efad0130fc50c70ee1b3b3122cd; userId=s00580; userType=CBUSER; userName=%E6%9D%8E%E9%95%BF%E5%85%B4',
+      Cookie = 'JSESSIONID=E8AE8B54DA146AC1B35641E5C9457625; theme=theme_base; userName=%E6%9D%8E%E9%95%BF%E5%85%B4; token=09e427dbda642903a482e750496ac5dd; userId=s00580; userType=CBUSER',
       Referer = 'http://172.18.32.14:8080/ncc-oms/repayapply/repayApplyPage?token=a25b085949531e494c422dccc17638b6&userId=s00580&userType=CBUSER&userName=%E6%9D%8E%E9%95%BF%E5%85%B4',
       Host = '172.18.32.14:8080',
       'X-Requested-With' = 'XMLHttpRequest'
@@ -316,9 +316,9 @@ result$req_time <-
 result$noti_time <-
   as.POSIXct(as.numeric(result$updateDatetime) / 1000, origin = "1970-01-01 00:00:00")
 result <-
-  subset(result, result$repayType %in% c('RT01'))#####再次筛选实时:RT01 or批扣::RT01
+  subset(result, result$repayType %in% c('RT01'))#####选实时:RT01 or批扣::RT02
 result <-
-  subset(result, !result$channelId %in% c('PCS'))#####再次筛选实时:RT01 or批扣::RT01
+  subset(result, !result$channelId %in% c('PCS'))#####筛选不为PCS代扣的
 result<-subset(result,!result$status%in%c('00','10'))
 res_ag <-
   aggregate(result$idNo,
@@ -343,6 +343,8 @@ res_ag[res_ag$Group.2 == 'BXBK', ]$Group.2 <- '百信银行'
 res_ag[res_ag$Group.2 == 'FOTIC', ]$Group.2 <- '外贸信托'
 res_ag[res_ag$Group.2 == 'SZYH', ]$Group.2 <- '苏州银行'
 res_ag[res_ag$Group.2 == 'YNXT', ]$Group.2 <- '云南信托'
+res_ag[res_ag$Group.2 == 'HYXF', ]$Group.2 <- '杭银消费'
+
 
 
 
@@ -372,6 +374,8 @@ res_ag_c[res_ag_c$Group.2 == 'BXBK', ]$Group.2 <- '百信银行'
 res_ag_c[res_ag_c$Group.2 == 'FOTIC', ]$Group.2 <- '外贸信托'
 res_ag_c[res_ag_c$Group.2 == 'SZYH', ]$Group.2 <- '苏州银行'
 res_ag_c[res_ag_c$Group.2 == 'YNXT', ]$Group.2 <- '云南信托'
+res_ag_c[res_ag_c$Group.2 == 'HYXF', ]$Group.2 <- '杭银消费'
+
 
 
 

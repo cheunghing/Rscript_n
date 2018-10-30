@@ -13,8 +13,8 @@ mainpath<-"D:/Rworkplace"##存储路径
 result <- data.frame()
 
 
-start_time<-'2018-10-25'
-end_time<-'2018-10-25'
+start_time<-'2018-10-29'
+end_time<-'2018-10-29'
 
 page <- 1
 row <- 5000
@@ -30,7 +30,7 @@ handle <-
       Connection = 'keep-alive',
       # 'Content-Length' = '',
       'Content-Type' = 'application/x-www-form-urlencoded; charset=UTF-8',
-      Cookie = 'JSESSIONID=EABF05776D19DE9BE50FE3C7C25269AB; theme=theme_base; token=27271efad0130fc50c70ee1b3b3122cd; userId=s00580; userType=CBUSER; userName=%E6%9D%8E%E9%95%BF%E5%85%B4',
+      Cookie = 'JSESSIONID=B0C5EBF10B04D4364A58444AE86ED28D; theme=theme_base; userName=%E6%9D%8E%E9%95%BF%E5%85%B4; token=09e427dbda642903a482e750496ac5dd; userId=s00580; userType=CBUSER',
       Referer = 'http://172.18.32.14:8080/ncc-oms/pbcapply/pbcApplyPage?token=a25b085949531e494c422dccc17638b6&userId=s00580&userType=CBUSER&userName=%E6%9D%8E%E9%95%BF%E5%85%B4',
       Host = '172.18.32.14:8080',
       'X-Requested-With' = 'XMLHttpRequest'
