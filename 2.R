@@ -7,7 +7,7 @@ library(scales)
 mainpath<-"D:/Rworkplace"##存储路径
 normal_fail <-
   c('.*余额.*不足.*', '.*额度不足.*', '订单关闭成功', '订单未支付', '订单已关闭')
-date<-seq(from='20181023',to='20181029',by=1)
+date<-seq(from='20181021',to='20181030',by=1)
 result<-data.frame()
 for (i in as.character(date)) {
   result <- rbind(result,read.csv(paste(mainpath,"/hist_data/",format(as.Date(i,format='%Y%m%d'),format='%Y%m%d'),"-",format(as.Date(i,format='%Y%m%d')+1,format='%Y%m%d'),"-1.csv",sep = '')
@@ -67,6 +67,47 @@ result<-subset(result,result$notifyUrl=='NA')###把混入的批扣交易筛去
 
 cat('原始数据整理完毕\n')
 
+cacu_fee <- function(df_t) {
+  cat(1)
+  df <- df_t
+  df$fee<-NA
+  df<-rbind(df,NA)
+  df[dim(df)[1],]$channelId<-'TAT'
+  ###在这里写基础费率
+  df[which(df$channelId == 'BAOFOO' |df$channelId == 'TAT'), ]$fee <- 1.1
+  df[which(df$channelId == 'ALLINPAY' |df$channelId == 'TAT'), ]$fee <- 1.5
+  df[which(df$channelId == 'ALLINPAY2'|df$channelId=='TAT'),]$fee <-
+    df[which(df$channelId == 'ALLINPAY2'|df$channelId=='TAT'),]$transAmt * 0.002
+  df[which(df$channelId == 'ALLINPAYQUICK' |df$channelId == 'TAT'), ]$fee <-
+    df[which(df$channelId == 'ALLINPAYQUICK' |df$channelId == 'TAT'), ]$transAmt * 0.0021
+  df[which(df$channelId == 'BAOFOOQUICK' |df$channelId == 'TAT'), ]$fee <-
+    df[which(df$channelId == 'BAOFOOQUICK' |df$channelId == 'TAT'), ]$transAmt * 0.0023
+  df[which(df$channelId == 'JDPAY' | df$channelId == 'TAT'), ]$fee <-
+    df[which(df$channelId == 'JDPAY' |df$channelId == 'TAT'), ]$transAmt * 0.002
+  df[which(df$channelId == 'CPCNQUICK' | df$channelId == 'TAT'), ]$fee <-df[which(df$channelId == 'CPCNQUICK' |df$channelId == 'TAT'), ]$transAmt * 0.002
+  df[which(df$channelId == 'BILL99QUICK' |df$channelId == 'TAT'), ]$fee <-
+    df[which(df$channelId == 'BILL99QUICK' |df$channelId == 'TAT'), ]$transAmt * 0.002
+  df[which(df$channelId == 'WEIXIN' | df$channelId == 'TAT'), ]$fee <-df[which(df$channelId == 'WEIXIN' |df$channelId == 'TAT'), ]$transAmt * 0.002
+  df[which(df$channelId == 'CPCN' | df$channelId == 'TAT'), ]$fee <-1.2
+  df[which(df$channelId == 'YEEPAY' |df$channelId == 'TAT'), ]$fee <- 1.8
+  df[which(df$channelId == 'BILL99' |df$channelId == 'TAT'), ]$fee <- 0.8
+  cat(2)
+  ###在这里写分支费率
+  df[which(df$channelId == 'BAOFOO' &df$bankCode != '03080000' &df$transAmt > 1000 | df$channelId == 'TAT'), ]$fee <- 1.3
+  df[which(df$channelId == 'BAOFOO' &df$bankCode == '03080000' &df$transAmt < 5000 | df$channelId == 'TAT'), ]$fee <- 1.3
+  df[which(df$channelId == 'BAOFOO' &df$bankCode == '03080000' &df$transAmt >= 5000 | df$channelId == 'TAT'), ]$fee <- 1.7
+  df[which(df$channelId == 'CPCN' &df$bankCode == '03080000' | df$channelId == 'TAT'), ]$fee <-df[which(df$channelId == 'CPCN' &
+                                                                                                          df$bankCode == '03080000' |df$channelId == 'TAT'), ]$transAmt * 0.002
+  df[which(df$channelId == 'BILL99' &df$bankCode == '01050000' &df$transAmt < 5000 | df$channelId == 'TAT'), ]$fee <- 1.4
+  df[which(df$channelId == 'BILL99' &df$bankCode == '01050000' &df$transAmt >= 5000 | df$channelId == 'TAT'), ]$fee <- 1.8
+  df[which(df$channelId == 'BILL99' &df$bankCode != '01050000' &df$transAmt >= 1000 & df$transAmt < 5000| df$channelId == 'TAT'), ]$fee <- 1.4
+  df[which(df$channelId == 'BILL99' &df$bankCode != '01050000' &df$transAmt >= 5000 | df$channelId == 'TAT'), ]$fee <- 1.8
+  df<-subset(df,df$channelId!='TAT')
+  
+  return(df)
+}
+result<-cacu_fee(result)
+
 res<-aggregate(result$transSeqno,list(substr(result$crea_time,1,10),result$status),length)
 res_1<-dcast(res,Group.1~Group.2,value.var ='x')
 res_1$总数<-res_1$成功+res_1$`失败(异常)`+res_1$`失败(余额不足)`
@@ -107,4 +148,35 @@ ggplot(data = res_2,aes(
   color = '指标'
 )+geom_text(data=res_2 ,aes(label = paste(100*round(res_2$value,4),'%')), vjust = 1.5, colour = "black", position = position_dodge(.9), size = 5)+ theme(text = element_text(family = 'STXihei', size = 16)) 
 dev.off()
-
+result_90<-subset(result,result$status=='成功')
+fee_1<-aggregate(result_90$transAmt,list(substr(result_90$crea_time,1,10)),sum)
+fee_2<-aggregate(result_90$transAmt,list(substr(result_90$crea_time,1,10)),length)
+fee_3<-aggregate(result_90$fee,list(substr(result_90$crea_time,1,10)),sum)
+fee_res<-merge(merge(fee_1,fee_2,by=c('Group.1'),all=T),fee_3,by=c('Group.1'),all=T)
+fee_res$per_trx<-fee_res$x/fee_res$x.y
+fee_res$per_thous<-fee_res$x/fee_res$x.x*1000
+names(fee_res)<-c('日期','总金额','总笔数','总费用','笔均费用','千元费用')
+fee_res_melt<-melt(fee_res[,c(1,5,6)],id.vars = c('日期'),variable.name = 'type',value.name = 'value')
+png(filename = paste(mainpath,"/pic/",date[length(date)],"成本趋势.png",sep=''),width = 600*1.35,
+    height = 400*1.35)
+ggplot(data = fee_res_melt,aes(
+  x = fee_res_melt$日期,
+  y = fee_res_melt$value
+  
+)) + geom_line(
+  
+  aes(
+    
+    group = fee_res_melt$type,
+    
+    color = fee_res_melt$type
+    
+  ),
+  size = 1
+) + labs(
+  title = paste('成本趋势', date[1], '至', date[length(date)]),
+  x = '日期',
+  y = '成本',
+  color = '指标'
+)+geom_text(data=fee_res_melt ,aes(label = round(fee_res_melt$value,2)), vjust = 1.5, colour = "black", position = position_dodge(.9), size = 4)+ theme(text = element_text(family = 'STXihei', size = 16))+ylim(c(0,1.5))
+dev.off()
