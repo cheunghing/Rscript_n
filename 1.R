@@ -8,9 +8,9 @@ library(scales)
 mainpath<-"D:/Rworkplace"##存储路径
 setwd(mainpath)
 trans_type <- '1'  ##1实时 4批量
-start_time <- '2018-10-31+00:00:00'
+start_time <- '2018-11-01+00:00:00'
 end_time <-
-  '2018-11-01+00:00:00'  ####format(Sys.time(), format = '%Y-%m-%d+%H:%M:%S')  #######
+  '2018-11-02+00:00:00'  ####format(Sys.time(), format = '%Y-%m-%d+%H:%M:%S')  #######
 loop_time <- NA
 start_num <- 0
 length <- 5000
@@ -25,7 +25,7 @@ handle <-
       Connection = 'keep-alive',
       # 'Content-Length' = '',
       'Content-Type' = 'application/x-www-form-urlencoded; charset=UTF-8',
-      Cookie = 'JSESSIONID=749F8B640628A4F114B1175A3448C938; theme=theme_base; userName=%E6%9D%8E%E9%95%BF%E5%85%B4; token=a9acde0ff6754a2f5ee6d240323af7c0; userId=s00580; userType=CBUSER',
+      Cookie = 'JSESSIONID=BFD3269EE32BCD99785A7B45175D8F10; theme=theme_base; token=9876c21172318671647ae06945599bf4; userId=s00580; userType=CBUSER; userName=%E6%9D%8E%E9%95%BF%E5%85%B4',
       Referer = 'http://172.18.32.14:8080/pcs-oms-new/payment/transOrderInfo/list?token=3cf075a6f585a7e414a08e794d777509&userId=s00580&userType=CBUSER&userName=%E6%9D%8E%E9%95%BF%E5%85%B4',
       Host = '172.18.32.14:8080',
       'X-Requested-With' = 'XMLHttpRequest'

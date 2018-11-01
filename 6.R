@@ -5,14 +5,54 @@ library(jsonlite)
 library(reshape2)
 library(scales)
 mainpath<-"D:/Rworkplace"##存储路径
-start_time <- '2018-10-25 00:00:00'
+start_time <- '2018-11-01 00:00:00'
 end_time <-
-  '2018-10-26 00:00:00'  ####format(Sys.time(), format = '%Y-%m-%d+%H:%M:%S')  #######
+  '2018-11-02 00:00:00'  ####format(Sys.time(), format = '%Y-%m-%d+%H:%M:%S')  #######
 loop_time <- NA
 start_num <- 0
 length <- 5000
 draw <- '1'
 result <- data.frame()
+split <- ##耗时分区
+  c(
+    -Inf,
+    3,
+    10,
+    30,
+    60,
+    60 * 3,
+    60 * 5,
+    60 * 10,
+    60 * 20,
+    60 * 30,
+    60 * 60,
+    3600 * 2,
+    3600 * 3,
+    3600 * 6,
+    3600 * 12,
+    3600 * 24,
+    +Inf
+  )
+label <-
+  c(
+    '3s以下',
+    '大于3s小于10s',
+    '大于10s小于30s',
+    '大于30s小于1min',
+    '大于1min小于3min',
+    '大于3min小于5min',
+    '大于5min小于10min',
+    '大于10min小于20min',
+    '大于20min小于30min',
+    '大于30min小于1hour',
+    '大于1hour小于2hour',
+    '大于2hour小于3hour',
+    '大于3hour小于6hour',
+    '大于6hour小于12hour',
+    '大于12hour小于1day',
+    '大于1day'
+  )
+
 handle <-
   getCurlHandle(
     httpheader = list(
@@ -22,7 +62,7 @@ handle <-
       Connection = 'keep-alive',
       # 'Content-Length' = '',
       'Content-Type' = 'application/x-www-form-urlencoded; charset=UTF-8',
-      Cookie = 'JSESSIONID=749F8B640628A4F114B1175A3448C938; theme=theme_base; userName=%E6%9D%8E%E9%95%BF%E5%85%B4; token=a9acde0ff6754a2f5ee6d240323af7c0; userId=s00580; userType=CBUSER',
+      Cookie = 'JSESSIONID=EF38A2957159ADF1D9800D6691CCCF3B; theme=theme_base; userName=%E6%9D%8E%E9%95%BF%E5%85%B4; token=9876c21172318671647ae06945599bf4; userId=s00580; userType=CBUSER',
       Referer = 'http://172.18.32.14:8080/ncc-oms/repayapply/repayApplyPage?token=a25b085949531e494c422dccc17638b6&userId=s00580&userType=CBUSER&userName=%E6%9D%8E%E9%95%BF%E5%85%B4',
       Host = '172.18.32.14:8080',
       'X-Requested-With' = 'XMLHttpRequest'
@@ -315,11 +355,24 @@ result$req_time <-
   as.POSIXct(as.numeric(result$requestDatetime) / 1000, origin = "1970-01-01 00:00:00")
 result$noti_time <-
   as.POSIXct(as.numeric(result$updateDatetime) / 1000, origin = "1970-01-01 00:00:00")
+result$noti_time[which(!result$status %in% c('80', '90'))] <-
+  Sys.time()
+result$take_time <- result$noti_time - result$req_time
+
+# result$noti_time <-
+#   as.POSIXct(paste(result$transDate,result$transTime,sep=''), origin = "1970-01-01 00:00:00")
+# result$noti_time <-
+#   paste(result$transDate,result$transTime,sep='')
+
 result <-
   subset(result, result$repayType %in% c('RT01'))#####选实时:RT01 or批扣::RT02
 result <-
   subset(result, !result$channelId %in% c('PCS'))#####筛选不为PCS代扣的
 result<-subset(result,!result$status%in%c('00','10'))
+
+result$group <-
+  cut(as.numeric(result$take_time), split, label)##划分耗时区间
+
 res_ag <-
   aggregate(result$idNo,
             list(result$bankName.y, result$channelId, result$status),
