@@ -62,7 +62,7 @@ handle <-
       Connection = 'keep-alive',
       # 'Content-Length' = '',
       'Content-Type' = 'application/x-www-form-urlencoded; charset=UTF-8',
-      Cookie = 'JSESSIONID=EF38A2957159ADF1D9800D6691CCCF3B; theme=theme_base; userName=%E6%9D%8E%E9%95%BF%E5%85%B4; token=9876c21172318671647ae06945599bf4; userId=s00580; userType=CBUSER',
+      Cookie = 'JSESSIONID=68C10CAF7DC52F047EAD451CF7616BB2; theme=theme_base; token=e94e3f77df07b79f8f205b0f0f19f27a; userId=s00580; userType=CBUSER; userName=%E6%9D%8E%E9%95%BF%E5%85%B4',
       Referer = 'http://172.18.32.14:8080/ncc-oms/repayapply/repayApplyPage?token=a25b085949531e494c422dccc17638b6&userId=s00580&userType=CBUSER&userName=%E6%9D%8E%E9%95%BF%E5%85%B4',
       Host = '172.18.32.14:8080',
       'X-Requested-With' = 'XMLHttpRequest'
@@ -288,6 +288,7 @@ getdata <-
       'order[0][dir]' = 'desc',
       'start' = start_num,
       'length' = length,
+      'repayType'='RT01',
       'search[value]' = '',
       'search[regex]' = 'false',
       'startCreateDatetime' = s_time,
@@ -339,15 +340,41 @@ if (loop_time > 1) {
   }
 }
 cat('数据下载完成\n')
-##unique_bank_list <-result[!duplicated(result$bankCode), c(12, 13)]##银行名称合并之生成银行唯一列表
-result <-  ##银行名称合并之关联银行唯一列表
-  merge(
-    result,
-    unique_bank_list,
-    by.x = c('bankCode'),
-    by.y = c('bankCode'),
-    all.x = T
-  )
+# unique_bank_list <-result[!duplicated(result$bankCode), c(12, 13)]##银行名称合并之生成银行唯一列表
+# result <-  ##银行名称合并之关联银行唯一列表
+#   merge(
+#     result,
+#     unique_bank_list,
+#     by.x = c('bankCode'),
+#     by.y = c('bankCode'),
+#     all.x = T
+#   )
+result$bankName_uni<-result$bankName
+result[grep('.*建设.*',result$bankName),]$bankName_uni<-'建设银行'
+result[grep('.*工商*',result$bankName),]$bankName_uni<-'工商银行'
+result[grep('.*浦东*',result$bankName),]$bankName_uni<-'浦发银行'
+result[grep('.*农业*',result$bankName),]$bankName_uni<-'农业银行'
+result[grep('.*交通*',result$bankName),]$bankName_uni<-'交通银行'
+result[grep('.*民生*',result$bankName),]$bankName_uni<-'民生银行'
+result[grep('.*邮政*',result$bankName),]$bankName_uni<-'邮储银行'
+result[grep('.*广东发展.*',result$bankName),]$bankName_uni<-'广发银行'
+result[grep('.*光大*',result$bankName),]$bankName_uni<-'光大银行'
+#++++++++++++++++++++++++++#
+result[result$channelId == 'BSB', ]$channelId <- '包商'
+result[result$channelId == 'MSXF', ]$channelId <- '马上消费'
+result[result$channelId == 'YCWD', ]$channelId <- '粤财网贷'
+result[result$channelId == 'YCXT', ]$channelId <- '粤财信托'
+result[result$channelId == 'ZWXD', ]$channelId <- '众网小贷'
+result[result$channelId == 'ZXXT', ]$channelId <- '中信信托'
+result[result$channelId == 'ZABX', ]$channelId <- '众安保险'
+result[result$channelId == 'XYXJ', ]$channelId <- '兴业消金'
+result[result$channelId == 'BXBK', ]$channelId <- '百信银行'
+result[result$channelId == 'FOTIC', ]$channelId <- '外贸信托'
+result[result$channelId == 'SZYH', ]$channelId <- '苏州银行'
+result[result$channelId == 'YNXT', ]$channelId <- '云南信托'
+result[result$channelId == 'HYXF', ]$channelId <- '杭银消费'
+
+
 
 result$crea_time <-
   as.POSIXct(as.numeric(result$createDatetime) / 1000, origin = "1970-01-01 00:00:00")
@@ -357,7 +384,7 @@ result$noti_time <-
   as.POSIXct(as.numeric(result$updateDatetime) / 1000, origin = "1970-01-01 00:00:00")
 result$noti_time[which(!result$status %in% c('80', '90'))] <-
   Sys.time()
-result$take_time <- result$noti_time - result$req_time
+result$take_time <- result$noti_time - result$crea_time
 
 # result$noti_time <-
 #   as.POSIXct(paste(result$transDate,result$transTime,sep=''), origin = "1970-01-01 00:00:00")
@@ -384,19 +411,19 @@ res_ag[is.na(res_ag$`90`), ]$`90` <- 0
 res_ag$total <-  res_ag$`80` + res_ag$`90`
 res_ag$rate <- res_ag$`90` / res_ag$total
 res_ag <- res_ag[, c('Group.1', 'Group.2', '90', 'total', 'rate')]
-res_ag[res_ag$Group.2 == 'BSB', ]$Group.2 <- '包商'
-res_ag[res_ag$Group.2 == 'MSXF', ]$Group.2 <- '马上消费'
-res_ag[res_ag$Group.2 == 'YCWD', ]$Group.2 <- '粤财网贷'
-res_ag[res_ag$Group.2 == 'YCXT', ]$Group.2 <- '粤财信托'
-res_ag[res_ag$Group.2 == 'ZWXD', ]$Group.2 <- '众网小贷'
-res_ag[res_ag$Group.2 == 'ZXXT', ]$Group.2 <- '中信信托'
-res_ag[res_ag$Group.2 == 'ZABX', ]$Group.2 <- '众安保险'
-res_ag[res_ag$Group.2 == 'XYXJ', ]$Group.2 <- '兴业消金'
-res_ag[res_ag$Group.2 == 'BXBK', ]$Group.2 <- '百信银行'
-res_ag[res_ag$Group.2 == 'FOTIC', ]$Group.2 <- '外贸信托'
-res_ag[res_ag$Group.2 == 'SZYH', ]$Group.2 <- '苏州银行'
-res_ag[res_ag$Group.2 == 'YNXT', ]$Group.2 <- '云南信托'
-res_ag[res_ag$Group.2 == 'HYXF', ]$Group.2 <- '杭银消费'
+# res_ag[res_ag$Group.2 == 'BSB', ]$Group.2 <- '包商'
+# res_ag[res_ag$Group.2 == 'MSXF', ]$Group.2 <- '马上消费'
+# res_ag[res_ag$Group.2 == 'YCWD', ]$Group.2 <- '粤财网贷'
+# res_ag[res_ag$Group.2 == 'YCXT', ]$Group.2 <- '粤财信托'
+# res_ag[res_ag$Group.2 == 'ZWXD', ]$Group.2 <- '众网小贷'
+# res_ag[res_ag$Group.2 == 'ZXXT', ]$Group.2 <- '中信信托'
+# res_ag[res_ag$Group.2 == 'ZABX', ]$Group.2 <- '众安保险'
+# res_ag[res_ag$Group.2 == 'XYXJ', ]$Group.2 <- '兴业消金'
+# res_ag[res_ag$Group.2 == 'BXBK', ]$Group.2 <- '百信银行'
+# res_ag[res_ag$Group.2 == 'FOTIC', ]$Group.2 <- '外贸信托'
+# res_ag[res_ag$Group.2 == 'SZYH', ]$Group.2 <- '苏州银行'
+# res_ag[res_ag$Group.2 == 'YNXT', ]$Group.2 <- '云南信托'
+# res_ag[res_ag$Group.2 == 'HYXF', ]$Group.2 <- '杭银消费'
 
 
 
@@ -415,19 +442,19 @@ res_ag_c[is.na(res_ag_c$`80`), ]$`80` <- 0
 res_ag_c[is.na(res_ag_c$`90`), ]$`90` <- 0
 res_ag_c$total <-  res_ag_c$`80` + res_ag_c$`90`
 res_ag_c<-res_ag_c[,c('Group.1', 'Group.2', '90', 'total')]
-res_ag_c[res_ag_c$Group.2 == 'BSB', ]$Group.2 <- '包商'
-res_ag_c[res_ag_c$Group.2 == 'MSXF', ]$Group.2 <- '马上消费'
-res_ag_c[res_ag_c$Group.2 == 'YCWD', ]$Group.2 <- '粤财网贷'
-res_ag_c[res_ag_c$Group.2 == 'YCXT', ]$Group.2 <- '粤财信托'
-res_ag_c[res_ag_c$Group.2 == 'ZWXD', ]$Group.2 <- '众网小贷'
-res_ag_c[res_ag_c$Group.2 == 'ZXXT', ]$Group.2 <- '中信信托'
-res_ag_c[res_ag_c$Group.2 == 'ZABX', ]$Group.2 <- '众安保险'
-res_ag_c[res_ag_c$Group.2 == 'XYXJ', ]$Group.2 <- '兴业消金'
-res_ag_c[res_ag_c$Group.2 == 'BXBK', ]$Group.2 <- '百信银行'
-res_ag_c[res_ag_c$Group.2 == 'FOTIC', ]$Group.2 <- '外贸信托'
-res_ag_c[res_ag_c$Group.2 == 'SZYH', ]$Group.2 <- '苏州银行'
-res_ag_c[res_ag_c$Group.2 == 'YNXT', ]$Group.2 <- '云南信托'
-res_ag_c[res_ag_c$Group.2 == 'HYXF', ]$Group.2 <- '杭银消费'
+# res_ag_c[res_ag_c$Group.2 == 'BSB', ]$Group.2 <- '包商'
+# res_ag_c[res_ag_c$Group.2 == 'MSXF', ]$Group.2 <- '马上消费'
+# res_ag_c[res_ag_c$Group.2 == 'YCWD', ]$Group.2 <- '粤财网贷'
+# res_ag_c[res_ag_c$Group.2 == 'YCXT', ]$Group.2 <- '粤财信托'
+# res_ag_c[res_ag_c$Group.2 == 'ZWXD', ]$Group.2 <- '众网小贷'
+# res_ag_c[res_ag_c$Group.2 == 'ZXXT', ]$Group.2 <- '中信信托'
+# res_ag_c[res_ag_c$Group.2 == 'ZABX', ]$Group.2 <- '众安保险'
+# res_ag_c[res_ag_c$Group.2 == 'XYXJ', ]$Group.2 <- '兴业消金'
+# res_ag_c[res_ag_c$Group.2 == 'BXBK', ]$Group.2 <- '百信银行'
+# res_ag_c[res_ag_c$Group.2 == 'FOTIC', ]$Group.2 <- '外贸信托'
+# res_ag_c[res_ag_c$Group.2 == 'SZYH', ]$Group.2 <- '苏州银行'
+# res_ag_c[res_ag_c$Group.2 == 'YNXT', ]$Group.2 <- '云南信托'
+# res_ag_c[res_ag_c$Group.2 == 'HYXF', ]$Group.2 <- '杭银消费'
 
 
 
@@ -549,3 +576,28 @@ ggplot(data = res_ag) +geom_line(
     fill = '资金方'
   )+scale_fill_brewer(palette = 'Set1')
 dev.off()
+result$bankName_uni<-reorder(result$bankName_uni, rep(-1, length(result$bankName_uni)), sum)
+result$group<-factor(result$group, levels = label[seq(16, 1)], ordered = T)
+ggplot(data = result,aes(
+  x = bankName_uni,
+  fill = group
+)) + geom_bar(position = 'fill') + scale_fill_manual(
+  values = c(
+    '#001107',
+    '#88001B',
+    '#FF0033',
+    '#FF6600',
+    '#FF0099',
+    '#FF00FF',
+    '#CC00FF',
+    '#9900FF',
+    '#6600FF',
+    '#0033FF',
+    '#0099FF',
+    '#00CCFF',
+    '#00FFFF',
+    '#00FFCC',
+    '#F1F141',
+    '#99FF00'
+  )
+) + theme(text = element_text(family = 'STXihei', size = 8))+facet_grid(channelId~.)
