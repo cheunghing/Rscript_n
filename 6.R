@@ -5,9 +5,9 @@ library(jsonlite)
 library(reshape2)
 library(scales)
 mainpath<-"D:/Rworkplace"##存储路径
-start_time <- '2018-11-01 00:00:00'
+start_time <- '2018-11-08 00:00:00'
 end_time <-
-  '2018-11-02 00:00:00'  ####format(Sys.time(), format = '%Y-%m-%d+%H:%M:%S')  #######
+  '2018-11-09 00:00:00'  ####format(Sys.time(), format = '%Y-%m-%d+%H:%M:%S')  #######
 loop_time <- NA
 start_num <- 0
 length <- 5000
@@ -62,7 +62,7 @@ handle <-
       Connection = 'keep-alive',
       # 'Content-Length' = '',
       'Content-Type' = 'application/x-www-form-urlencoded; charset=UTF-8',
-      Cookie = 'JSESSIONID=68C10CAF7DC52F047EAD451CF7616BB2; theme=theme_base; token=e94e3f77df07b79f8f205b0f0f19f27a; userId=s00580; userType=CBUSER; userName=%E6%9D%8E%E9%95%BF%E5%85%B4',
+      Cookie = 'JSESSIONID=A53C225FC3724CB71546106EBC5EADE2; theme=theme_base; token=9b39e64d98116164852454d223fd5507; userId=s00580; userType=CBUSER; userName=%E6%9D%8E%E9%95%BF%E5%85%B4',
       Referer = 'http://172.18.32.14:8080/ncc-oms/repayapply/repayApplyPage?token=a25b085949531e494c422dccc17638b6&userId=s00580&userType=CBUSER&userName=%E6%9D%8E%E9%95%BF%E5%85%B4',
       Host = '172.18.32.14:8080',
       'X-Requested-With' = 'XMLHttpRequest'
@@ -402,7 +402,7 @@ result$group <-
 
 res_ag <-
   aggregate(result$idNo,
-            list(result$bankName.y, result$channelId, result$status),
+            list(result$bankName_uni, result$channelId, result$status),
             length)
 res_ag <- dcast(res_ag, Group.1 + Group.2 ~ Group.3, value.var = "x")
 ##res_ag[is.na(res_ag$`10`), ]$`10` <- 0
@@ -434,7 +434,7 @@ names(res_ag) <- c('银行', '渠道', '成功数', '总数', '成功率')
 #------------------------#
 res_ag_c<-
   aggregate(result$totalAmt,
-            list(result$bankName.y, result$channelId, result$status),
+            list(result$bankName_uni, result$channelId, result$status),
             sum)
 res_ag_c <- dcast(res_ag_c, Group.1 + Group.2 ~ Group.3, value.var = "x")
 ##res_ag_c[is.na(res_ag_c$`10`), ]$`10` <- 0
@@ -574,10 +574,21 @@ ggplot(data = res_ag) +geom_line(
     x = '银行',
     y = '成功率',
     fill = '资金方'
-  )+scale_fill_brewer(palette = 'Set1')
+  )+scale_fill_brewer(palette = 'Set3')
 dev.off()
 result$bankName_uni<-reorder(result$bankName_uni, rep(-1, length(result$bankName_uni)), sum)
 result$group<-factor(result$group, levels = label[seq(16, 1)], ordered = T)
+png(
+  filename = paste(
+    mainpath,"/pic/",
+    gsub('-', '', substr(start_time, 1, 10)),
+    "各资金方耗时图.png",
+    sep = ''
+  ),
+  ###生成银行图
+  width = 1400 ,
+  height = 700
+)
 ggplot(data = result,aes(
   x = bankName_uni,
   fill = group
@@ -600,4 +611,5 @@ ggplot(data = result,aes(
     '#F1F141',
     '#99FF00'
   )
-) + theme(text = element_text(family = 'STXihei', size = 8))+facet_grid(channelId~.)
+) + theme(text = element_text(family = 'STXihei', size = 15))+facet_grid(channelId~.)
+dev.off()
