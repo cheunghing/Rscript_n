@@ -8,9 +8,9 @@ library(scales)
 mainpath<-"D:/Rworkplace"##存储路径
 setwd(mainpath)
 trans_type <- '1'  ##1实时 4批量
-start_time <- '2018-11-08+00:00:00'
+start_time <- '2018-11-11+00:00:00'
 end_time <-
-  '2018-11-09+00:00:00'  ####format(Sys.time(), format = '%Y-%m-%d+%H:%M:%S')  #######
+  '2018-11-12+00:00:00'  ####format(Sys.time(), format = '%Y-%m-%d+%H:%M:%S')  #######
 loop_time <- NA
 start_num <- 0
 length <- 5000
@@ -25,7 +25,7 @@ handle <-
       Connection = 'keep-alive',
       # 'Content-Length' = '',
       'Content-Type' = 'application/x-www-form-urlencoded; charset=UTF-8',
-      Cookie = 'JSESSIONID=A53C225FC3724CB71546106EBC5EADE2; theme=theme_base; token=9b39e64d98116164852454d223fd5507; userId=s00580; userType=CBUSER; userName=%E6%9D%8E%E9%95%BF%E5%85%B4',
+      Cookie = 'JSESSIONID=03E583EF37759464669E6EBDA76994C6; theme=theme_base; userName=%E6%9D%8E%E9%95%BF%E5%85%B4; token=c37223fe710d5093af1b653c398052c5; userId=s00580; userType=CBUSER',
       Referer = 'http://172.18.32.14:8080/pcs-oms-new/payment/transOrderInfo/list?token=3cf075a6f585a7e414a08e794d777509&userId=s00580&userType=CBUSER&userName=%E6%9D%8E%E9%95%BF%E5%85%B4',
       Host = '172.18.32.14:8080',
       'X-Requested-With' = 'XMLHttpRequest'
@@ -291,7 +291,7 @@ result$noti_time <-
   as.POSIXct(as.numeric(result$notifyTime) / 1000, origin = "1970-01-01 00:00:00")
 result$noti_time[which(!result$status %in% c('SUCCESS', 'FAIL'))] <-
   Sys.time()
-result$take_time <- result$noti_time - result$req_time
+result$take_time <- result$noti_time - result$crea_time
 
 for (i in normal_fail) {
   #####定义正常失败
@@ -692,12 +692,12 @@ ggplot(data = result) + geom_bar(aes(
   fill = factor(result$group, levels = label[seq(16, 1)], ordered = T)
 ), position = 'fill') + scale_fill_manual(
   values = c(
-    '#001107',
-    '#88001B',
-    '#FF0033',
-    '#FF6600',
-    '#FF0099',
-    '#FF00FF',
+    # '#001107',
+    # '#88001B',
+    # '#FF0033',
+    # '#FF6600',
+    # '#FF0099',
+    # '#FF00FF',
     '#CC00FF',
     '#9900FF',
     '#6600FF',
