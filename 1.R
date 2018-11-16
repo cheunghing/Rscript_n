@@ -8,9 +8,9 @@ library(scales)
 mainpath<-"D:/Rworkplace"##存储路径
 setwd(mainpath)
 trans_type <- '1'  ##1实时 4批量
-start_time <- '2018-11-11+00:00:00'
+start_time <- '2018-11-16+00:00:00'
 end_time <-
-  '2018-11-12+00:00:00'  ####format(Sys.time(), format = '%Y-%m-%d+%H:%M:%S')  #######
+  '2018-11-17+00:00:00'  ####format(Sys.time(), format = '%Y-%m-%d+%H:%M:%S')  #######
 loop_time <- NA
 start_num <- 0
 length <- 5000
@@ -25,7 +25,7 @@ handle <-
       Connection = 'keep-alive',
       # 'Content-Length' = '',
       'Content-Type' = 'application/x-www-form-urlencoded; charset=UTF-8',
-      Cookie = 'JSESSIONID=03E583EF37759464669E6EBDA76994C6; theme=theme_base; userName=%E6%9D%8E%E9%95%BF%E5%85%B4; token=c37223fe710d5093af1b653c398052c5; userId=s00580; userType=CBUSER',
+      Cookie = 'JSESSIONID=1D0C2256A70BD1F90CBF40900D7361F8; theme=theme_base; userName=%E6%9D%8E%E9%95%BF%E5%85%B4; token=66d46edcecb7a82aa5eb1cc44f170a67; userId=s00580; userType=CBUSER',
       Referer = 'http://172.18.32.14:8080/pcs-oms-new/payment/transOrderInfo/list?token=3cf075a6f585a7e414a08e794d777509&userId=s00580&userType=CBUSER&userName=%E6%9D%8E%E9%95%BF%E5%85%B4',
       Host = '172.18.32.14:8080',
       'X-Requested-With' = 'XMLHttpRequest'
@@ -695,9 +695,9 @@ ggplot(data = result) + geom_bar(aes(
     # '#001107',
     # '#88001B',
     # '#FF0033',
-    # '#FF6600',
-    # '#FF0099',
-    # '#FF00FF',
+    '#FF6600',
+    '#FF0099',
+    '#FF00FF',
     '#CC00FF',
     '#9900FF',
     '#6600FF',

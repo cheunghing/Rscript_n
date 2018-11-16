@@ -5,9 +5,9 @@ library(jsonlite)
 library(reshape2)
 library(scales)
 mainpath<-"D:/Rworkplace"##存储路径
-start_time <- '2018-11-09 00:00:00'
+start_time <- '2018-11-16 00:00:00'
 end_time <-
-  '2018-11-10 00:00:00'  ####format(Sys.time(), format = '%Y-%m-%d+%H:%M:%S')  #######
+  '2018-11-17 00:00:00'  ####format(Sys.time(), format = '%Y-%m-%d+%H:%M:%S')  #######
 loop_time <- NA
 start_num <- 0
 length <- 5000
@@ -62,7 +62,7 @@ handle <-
       Connection = 'keep-alive',
       # 'Content-Length' = '',
       'Content-Type' = 'application/x-www-form-urlencoded; charset=UTF-8',
-      Cookie = 'JSESSIONID=03E583EF37759464669E6EBDA76994C6; theme=theme_base; userName=%E6%9D%8E%E9%95%BF%E5%85%B4; token=c37223fe710d5093af1b653c398052c5; userId=s00580; userType=CBUSER',
+      Cookie = 'JSESSIONID=1D0C2256A70BD1F90CBF40900D7361F8; theme=theme_base; userName=%E6%9D%8E%E9%95%BF%E5%85%B4; token=66d46edcecb7a82aa5eb1cc44f170a67; userId=s00580; userType=CBUSER',
       Referer = 'http://172.18.32.14:8080/ncc-oms/repayapply/repayApplyPage?token=a25b085949531e494c422dccc17638b6&userId=s00580&userType=CBUSER&userName=%E6%9D%8E%E9%95%BF%E5%85%B4',
       Host = '172.18.32.14:8080',
       'X-Requested-With' = 'XMLHttpRequest'
@@ -393,12 +393,14 @@ result$take_time <- result$noti_time - result$crea_time
 
 result <-
   subset(result, result$repayType %in% c('RT01'))#####选实时:RT01 or批扣::RT02
-result <-
-  subset(result, !result$channelId %in% c('PCS'))#####筛选不为PCS代扣的
+
 result<-subset(result,!result$status%in%c('00','10'))
 
 result$group <-
   cut(as.numeric(result$take_time), split, label)##划分耗时区间
+result_reroute<-subset(result,result$remark=='重路由PCS')
+result <-
+  subset(result, !result$channelId %in% c('PCS'))#####筛选不为PCS代扣的
 
 res_ag <-
   aggregate(result$idNo,
@@ -613,3 +615,9 @@ ggplot(data = result,aes(
   )
 ) + theme(text = element_text(family = 'STXihei', size = 15))+facet_grid(channelId~.)
 dev.off()
+
+res_reroute_agg<-merge(dcast(aggregate(result_reroute$idNo,list(result_reroute$bankName_uni,result_reroute$status),length),Group.1~Group.2,value.var = 'x'),dcast(aggregate(result_reroute$totalAmt,list(result_reroute$bankName_uni,result_reroute$status),sum),Group.1~Group.2,value.var = 'x'),all = T,by='Group.1')
+res_reroute_agg<-res_reroute_agg[,c(1,2,4,3,5)]
+res_reroute_agg[is.na(res_reroute_agg)]<-0
+res_reroute_agg$rate<-res_reroute_agg$`90.x`/(res_reroute_agg$`90.x`+res_reroute_agg$`80.x`)
+names(res_reroute_agg)<-c('银行','失败数','失败金额','成功数','成功金额','成功率')
