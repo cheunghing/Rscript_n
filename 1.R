@@ -8,9 +8,9 @@ library(scales)
 mainpath<-"D:/Rworkplace"##存储路径
 setwd(mainpath)
 trans_type <- '1'  ##1实时 4批量
-start_time <- '2018-11-16+00:00:00'
+start_time <- '2018-12-04+00:00:00'
 end_time <-
-  '2018-11-17+00:00:00'  ####format(Sys.time(), format = '%Y-%m-%d+%H:%M:%S')  #######
+  '2018-12-05+00:00:00'  ####format(Sys.time(), format = '%Y-%m-%d+%H:%M:%S')  #######
 loop_time <- NA
 start_num <- 0
 length <- 5000
@@ -25,7 +25,7 @@ handle <-
       Connection = 'keep-alive',
       # 'Content-Length' = '',
       'Content-Type' = 'application/x-www-form-urlencoded; charset=UTF-8',
-      Cookie = 'JSESSIONID=1D0C2256A70BD1F90CBF40900D7361F8; theme=theme_base; userName=%E6%9D%8E%E9%95%BF%E5%85%B4; token=66d46edcecb7a82aa5eb1cc44f170a67; userId=s00580; userType=CBUSER',
+      Cookie = 'JSESSIONID=D6AD011322E8CD114E605D036B92D447; theme=theme_base; userName=%E6%9D%8E%E9%95%BF%E5%85%B4; token=d84561838c24ec961a75570bcbd87f88; userId=s00580; userType=CBUSER',
       Referer = 'http://172.18.32.14:8080/pcs-oms-new/payment/transOrderInfo/list?token=3cf075a6f585a7e414a08e794d777509&userId=s00580&userType=CBUSER&userName=%E6%9D%8E%E9%95%BF%E5%85%B4',
       Host = '172.18.32.14:8080',
       'X-Requested-With' = 'XMLHttpRequest'
@@ -680,6 +680,10 @@ write.table(
 group_amt_agr <-
   aggregate(result$transSeqno, list(result$group_amt), length)
 #——————————————————详情表生成完毕————————————————#
+result_90<-subset(result,result$status=='成功')
+
+#——————————————————提取成功数据备用————————————————#
+
 png(
   filename = paste(mainpath,"/pic/", gsub('-', '', substr(start_time, 1, 10)), "银行图.png", sep =
                      ''),
@@ -694,7 +698,7 @@ ggplot(data = result) + geom_bar(aes(
   values = c(
     # '#001107',
     # '#88001B',
-    # '#FF0033',
+    '#FF0033',
     '#FF6600',
     '#FF0099',
     '#FF00FF',
@@ -779,9 +783,9 @@ png(
   width = 1580 / 1.5,
   height = 780 / 1.8
 )
-ggplot(data = result) + geom_bar(aes(
-  x = result$group_amt,
-  fill = reorder(result$channelName  , rep(-1, length(result$channelName)), sum)
+ggplot(data = result_90) + geom_bar(aes(
+  x = result_90$group_amt,
+  fill = reorder(result_90$channelName  , rep(-1, length(result_90$channelName)), sum)
 ), position = 'fill')  + theme(text = element_text(family = 'STXihei', size = 12)) + labs(
   title = paste('各交易区间各渠道占比', start_time, '至', end_time),
   x = '金额区间',
@@ -814,23 +818,24 @@ png(
   width = 1580 / 1.5,
   height = 780 / 1.8
 )
-ggplot(data = result) + geom_bar(aes(
-  x = reorder(result$bankName.y, rep(-1, length(result$bankName.y)), sum),
-  fill = reorder(result$channelName, rep(-1, length(result$channelName)), sum)
+bb_90<-subset(bb,bb$succ!=0)[,c('bank','succ')]
+ggplot(data = result_90) + geom_bar(aes(
+  x = reorder(result_90$bankName.y, rep(-1, length(result_90$bankName.y)), sum),
+  fill = reorder(result_90$channelName, rep(-1, length(result_90$channelName)), sum)
 ), position = 'fill')  + theme(text = element_text(family = 'STXihei', size = 12)) + labs(
   title = paste('各银行渠道分布', start_time, '至', end_time),
   x = '银行',
   y = '比率',
   fill = '渠道'
 ) + geom_line(
-  data = bb,
+  data = bb_90,
   aes(
-    x = bb$bank,
+    x = bb_90$bank,
     y = rescale(
-      bb$succ + bb$fail_abnor + bb$fail_nor + bb$processing,
+      bb_90$succ ,
       c(0, 1),
       c(0, max(
-        bb$succ + bb$fail_abnor + bb$fail_nor + bb$processing
+        bb_90$succ 
       ))
     ),
     group = 1
@@ -839,7 +844,7 @@ ggplot(data = result) + geom_bar(aes(
   fill = 'red',
   size = 1.2
 ) + scale_y_continuous(sec.axis = sec_axis(~ . * max(
-  bb$succ + bb$fail_abnor + bb$fail_nor + bb$processing
+  bb_90$succ 
 )))
 dev.off()
 
@@ -1055,6 +1060,9 @@ cacu_fee <- function(df_t) {
   df<-rbind(df,NA)
   df[dim(df)[1],]$channelId<-'TAT'
   ###在这里写基础费率
+  df[which(df$channelId == 'BFBFC'|df$channelId=='TAT'),]$fee <-
+    df[which(df$channelId == 'BFBFC'|df$channelId=='TAT'),]$transAmt * 0.0018
+  df[which(df$channelId == 'BFBB3' |df$channelId == 'TAT'), ]$fee <- 1.1
   df[which(df$channelId == 'BAOFOO' |df$channelId == 'TAT'), ]$fee <- 1.1
   df[which(df$channelId == 'ALLINPAY' |df$channelId == 'TAT'), ]$fee <- 1.5
   df[which(df$channelId == 'ALLINPAY2'|df$channelId=='TAT'),]$fee <-
@@ -1074,6 +1082,7 @@ cacu_fee <- function(df_t) {
   df[which(df$channelId == 'BILL99' |df$channelId == 'TAT'), ]$fee <- 0.8
   cat(2)
   ###在这里写分支费率
+  df[which(df$channelId == 'BFBB3'&df$transAmt > 1000 | df$channelId == 'TAT'), ]$fee <- 1.5
   df[which(df$channelId == 'BAOFOO' &df$bankCode != '03080000' &df$transAmt > 1000 | df$channelId == 'TAT'), ]$fee <- 1.3
   df[which(df$channelId == 'BAOFOO' &df$bankCode == '03080000' &df$transAmt < 5000 | df$channelId == 'TAT'), ]$fee <- 1.3
   df[which(df$channelId == 'BAOFOO' &df$bankCode == '03080000' &df$transAmt >= 5000 | df$channelId == 'TAT'), ]$fee <- 1.7

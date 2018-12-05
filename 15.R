@@ -252,6 +252,7 @@ get_repay_trx<-function(s_time,cookie){
         'search[regex]' = 'false',
         'startCreateDatetime' = s_time,
         'endCreateDatetime' = e_time
+        ##'orgCode'= 'YX_MDB'
       )
       res <- postForm(
         uri = 'http://172.18.32.14:8080/ncc-oms/repay_reform/repayChannelInfo/listPage',
@@ -560,8 +561,8 @@ get_notify_info<-function(s_time,cookie){
 }
 
 
-date<-as.character(format(seq(from=as.Date('20181110','%Y%m%d'),to=as.Date('20181111','%Y%m%d'),by='day'),'%Y%m%d'))##输入起始日期
-cookie<-'JSESSIONID=D05601800E12A4BA24E027EC91BE47B9; theme=theme_base; userName=%E6%9D%8E%E9%95%BF%E5%85%B4; token=66d46edcecb7a82aa5eb1cc44f170a67; userId=s00580; userType=CBUSER'##输入登录token
+date<-as.character(format(seq(from=as.Date('20181124','%Y%m%d'),to=as.Date('20181130','%Y%m%d'),by='day'),'%Y%m%d'))##输入起始日期
+cookie<-'JSESSIONID=E285818503736A06B407D0A970ABE3B2; theme=theme_base; userName=%E6%9D%8E%E9%95%BF%E5%85%B4; token=a0a24eeb35c367a547f9bfc1e77fdf12; userId=s00580; userType=CBUSER'##输入登录token
 result_ncc_trx<-data.frame()
 result_notify_info<-data.frame()
 

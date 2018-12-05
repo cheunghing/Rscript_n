@@ -7,7 +7,7 @@ library(scales)
 mainpath<-"D:/Rworkplace"##存储路径
 normal_fail <-
   c('.*余额.*不足.*', '.*额度不足.*', '订单关闭成功', '订单未支付', '订单已关闭')
-date<-seq(from='20181109',to='20181115',by=1)
+date<-seq(from='20181128',to='20181204',by=1)
 result<-data.frame()
 for (i in as.character(date)) {
   result <- rbind(result,read.csv(paste(mainpath,"/hist_data/",format(as.Date(i,format='%Y%m%d'),format='%Y%m%d'),"-",format(as.Date(i,format='%Y%m%d')+1,format='%Y%m%d'),"-1.csv",sep = '')
@@ -74,6 +74,9 @@ cacu_fee <- function(df_t) {
   df<-rbind(df,NA)
   df[dim(df)[1],]$channelId<-'TAT'
   ###在这里写基础费率
+  df[which(df$channelId == 'BFBFC'|df$channelId=='TAT'),]$fee <-
+    df[which(df$channelId == 'BFBFC'|df$channelId=='TAT'),]$transAmt * 0.0018
+  df[which(df$channelId == 'BFBB3' |df$channelId == 'TAT'), ]$fee <- 1.1
   df[which(df$channelId == 'BAOFOO' |df$channelId == 'TAT'), ]$fee <- 1.1
   df[which(df$channelId == 'ALLINPAY' |df$channelId == 'TAT'), ]$fee <- 1.5
   df[which(df$channelId == 'ALLINPAY2'|df$channelId=='TAT'),]$fee <-
@@ -93,6 +96,7 @@ cacu_fee <- function(df_t) {
   df[which(df$channelId == 'BILL99' |df$channelId == 'TAT'), ]$fee <- 0.8
   cat(2)
   ###在这里写分支费率
+  df[which(df$channelId == 'BFBB3'&df$transAmt > 1000 | df$channelId == 'TAT'), ]$fee <- 1.5
   df[which(df$channelId == 'BAOFOO' &df$bankCode != '03080000' &df$transAmt > 1000 | df$channelId == 'TAT'), ]$fee <- 1.3
   df[which(df$channelId == 'BAOFOO' &df$bankCode == '03080000' &df$transAmt < 5000 | df$channelId == 'TAT'), ]$fee <- 1.3
   df[which(df$channelId == 'BAOFOO' &df$bankCode == '03080000' &df$transAmt >= 5000 | df$channelId == 'TAT'), ]$fee <- 1.7

@@ -5,9 +5,9 @@ library(jsonlite)
 library(reshape2)
 library(scales)
 mainpath<-"D:/Rworkplace"##存储路径
-start_time <- '2018-11-16 00:00:00'
+start_time <- '2018-12-04 00:00:00'
 end_time <-
-  '2018-11-17 00:00:00'  ####format(Sys.time(), format = '%Y-%m-%d+%H:%M:%S')  #######
+  '2018-12-05 00:00:00'  ####format(Sys.time(), format = '%Y-%m-%d+%H:%M:%S')  #######
 loop_time <- NA
 start_num <- 0
 length <- 5000
@@ -62,14 +62,283 @@ handle <-
       Connection = 'keep-alive',
       # 'Content-Length' = '',
       'Content-Type' = 'application/x-www-form-urlencoded; charset=UTF-8',
-      Cookie = 'JSESSIONID=1D0C2256A70BD1F90CBF40900D7361F8; theme=theme_base; userName=%E6%9D%8E%E9%95%BF%E5%85%B4; token=66d46edcecb7a82aa5eb1cc44f170a67; userId=s00580; userType=CBUSER',
+      Cookie = 'JSESSIONID=D6AD011322E8CD114E605D036B92D447; theme=theme_base; userName=%E6%9D%8E%E9%95%BF%E5%85%B4; token=d84561838c24ec961a75570bcbd87f88; userId=s00580; userType=CBUSER',
       Referer = 'http://172.18.32.14:8080/ncc-oms/repayapply/repayApplyPage?token=a25b085949531e494c422dccc17638b6&userId=s00580&userType=CBUSER&userName=%E6%9D%8E%E9%95%BF%E5%85%B4',
       Host = '172.18.32.14:8080',
       'X-Requested-With' = 'XMLHttpRequest'
     )
   )
+get_reroute_data <-
+  function(s_time,
+           e_time,
+           start_num,
+           length,
+           handle,
+           draw) {
+    form <- c(
+      'draw' = draw,
+      'columns[0][data]' = 'cApplyId',
+      'columns[0][name]' = '',
+      'columns[0][searchable]' = 'true',
+      'columns[0][orderable]' = 'false',
+      'columns[0][search][value]' = '',
+      'columns[0][search][regex]' = 'false',
+      'columns[1][data]' = 'repayReqId',
+      'columns[1][name]' = '',
+      'columns[1][searchable]' = 'true',
+      'columns[1][orderable]' = 'true',
+      'columns[1][search][value]' = '',
+      'columns[1][search][regex]' = 'false',
+      'columns[2][data]' = 'custNo',
+      'columns[2][name]' = '',
+      'columns[2][searchable]' = 'true',
+      'columns[2][orderable]' = 'false',
+      'columns[2][search][value]' = '',
+      'columns[2][search][regex]' = 'false',
+      'columns[3][data]' = 'custName',
+      'columns[3][name]' = '',
+      'columns[3][searchable]' = 'true',
+      'columns[3][orderable]' = 'false',
+      'columns[3][search][value]' = '',
+      'columns[3][search][regex]' = 'false',
+      'columns[4][data]' = 'idType',
+      'columns[4][name]' = '',
+      'columns[4][searchable]' = 'true',
+      'columns[4][orderable]' = 'true',
+      'columns[4][search][value]' = '',
+      'columns[4][search][regex]' = 'false',
+      'columns[5][data]' = 'idNo',
+      'columns[5][name]' = '',
+      'columns[5][searchable]' = 'true',
+      'columns[5][orderable]' = 'false',
+      'columns[5][search][value]' = '',
+      'columns[5][search][regex]' = 'false',
+      'columns[6][data]' = 'repayType',
+      'columns[6][name]' = '',
+      'columns[6][searchable]' = 'true',
+      'columns[6][orderable]' = 'true',
+      'columns[6][search][value]' = '',
+      'columns[6][search][regex]' = 'false',
+      'columns[7][data]' = 'repayMethod',
+      'columns[7][name]' = '',
+      'columns[7][searchable]' = 'true',
+      'columns[7][orderable]' = 'true',
+      'columns[7][search][value]' = '',
+      'columns[7][search][regex]' = 'false',
+      'columns[8][data]' = 'channelId',
+      'columns[8][name]' = '',
+      'columns[8][searchable]' = 'true',
+      'columns[8][orderable]' = 'true',
+      'columns[8][search][value]' = '',
+      'columns[8][search][regex]' = 'false',
+      'columns[9][data]' = 'bankCardNo',
+      'columns[9][name]' = '',
+      'columns[9][searchable]' = 'true',
+      'columns[9][orderable]' = 'false',
+      'columns[9][search][value]' = '',
+      'columns[9][search][regex]' = 'false',
+      'columns[10][data]' = 'mobile',
+      'columns[10][name]' = '',
+      'columns[10][searchable]' = 'true',
+      'columns[10][orderable]' = 'false',
+      'columns[10][search][value]' = '',
+      'columns[10][search][regex]' = 'false',
+      'columns[11][data]' = 'bankCode',
+      'columns[11][name]' = '',
+      'columns[11][searchable]' = 'true',
+      'columns[11][orderable]' = 'false',
+      'columns[11][search][value]' = '',
+      'columns[11][search][regex]' = 'false',
+      'columns[12][data]' = 'bankName',
+      'columns[12][name]' = '',
+      'columns[12][searchable]' = 'true',
+      'columns[12][orderable]' = 'false',
+      'columns[12][search][value]' = '',
+      'columns[12][search][regex]' = 'false',
+      'columns[13][data]' = 'totalAmt',
+      'columns[13][name]' = '',
+      'columns[13][searchable]' = 'true',
+      'columns[13][orderable]' = 'false',
+      'columns[13][search][value]' = '',
+      'columns[13][search][regex]' = 'false',
+      'columns[14][data]' = 'totalPeriod',
+      'columns[14][name]' = '',
+      'columns[14][searchable]' = 'true',
+      'columns[14][orderable]' = 'false',
+      'columns[14][search][value]' = '',
+      'columns[14][search][regex]' = 'false',
+      'columns[15][data]' = 'status',
+      'columns[15][name]' = '',
+      'columns[15][searchable]' = 'true',
+      'columns[15][orderable]' = 'true',
+      'columns[15][search][value]' = '',
+      'columns[15][search][regex]' = 'false',
+      'columns[16][data]' = 'statusRemark',
+      'columns[16][name]' = '',
+      'columns[16][searchable]' = 'true',
+      'columns[16][orderable]' = 'false',
+      'columns[16][search][value]' = '',
+      'columns[16][search][regex]' = 'false',
+      'columns[17][data]' = 'stepStatus',
+      'columns[17][name]' = '',
+      'columns[17][searchable]' = 'true',
+      'columns[17][orderable]' = 'true',
+      'columns[17][search][value]' = '',
+      'columns[17][search][regex]' = 'false',
+      'columns[18][data]' = 'repayStatus',
+      'columns[18][name]' = '',
+      'columns[18][searchable]' = 'true',
+      'columns[18][orderable]' = 'true',
+      'columns[18][search][value]' = '',
+      'columns[18][search][regex]' = 'false',
+      'columns[19][data]' = 'channelReqId',
+      'columns[19][name]' = '',
+      'columns[19][searchable]' = 'true',
+      'columns[19][orderable]' = 'false',
+      'columns[19][search][value]' = '',
+      'columns[19][search][regex]' = 'false',
+      'columns[20][data]' = 'channelRepayId',
+      'columns[20][name]' = '',
+      'columns[20][searchable]' = 'true',
+      'columns[20][orderable]' = 'false',
+      'columns[20][search][value]' = '',
+      'columns[20][search][regex]' = 'false',
+      'columns[21][data]' = 'channelRspId',
+      'columns[21][name]' = '',
+      'columns[21][searchable]' = 'true',
+      'columns[21][orderable]' = 'false',
+      'columns[21][search][value]' = '',
+      'columns[21][search][regex]' = 'false',
+      'columns[22][data]' = 'repayDate',
+      'columns[22][name]' = '',
+      'columns[22][searchable]' = 'true',
+      'columns[22][orderable]' = 'true',
+      'columns[22][search][value]' = '',
+      'columns[22][search][regex]' = 'false',
+      'columns[23][data]' = 'transDate',
+      'columns[23][name]' = '',
+      'columns[23][searchable]' = 'true',
+      'columns[23][orderable]' = 'true',
+      'columns[23][search][value]' = '',
+      'columns[23][search][regex]' = 'false',
+      'columns[24][data]' = 'excProcessCnt',
+      'columns[24][name]' = '',
+      'columns[24][searchable]' = 'true',
+      'columns[24][orderable]' = 'true',
+      'columns[24][search][value]' = '',
+      'columns[24][search][regex]' = 'false',
+      'columns[25][data]' = 'responseCode',
+      'columns[25][name]' = '',
+      'columns[25][searchable]' = 'true',
+      'columns[25][orderable]' = 'false',
+      'columns[25][search][value]' = '',
+      'columns[25][search][regex]' = 'false',
+      'columns[26][data]' = 'responseInfo',
+      'columns[26][name]' = '',
+      'columns[26][searchable]' = 'true',
+      'columns[26][orderable]' = 'false',
+      'columns[26][search][value]' = '',
+      'columns[26][search][regex]' = 'false',
+      'columns[27][data]' = 'transSeqno',
+      'columns[27][name]' = '',
+      'columns[27][searchable]' = 'true',
+      'columns[27][orderable]' = 'true',
+      'columns[27][search][value]' = '',
+      'columns[27][search][regex]' = 'false',
+      'columns[28][data]' = 'requestDatetime',
+      'columns[28][name]' = '',
+      'columns[28][searchable]' = 'true',
+      'columns[28][orderable]' = 'true',
+      'columns[28][search][value]' = '',
+      'columns[28][search][regex]' = 'false',
+      'columns[29][data]' = 'responseDatetime',
+      'columns[29][name]' = '',
+      'columns[29][searchable]' = 'true',
+      'columns[29][orderable]' = 'true',
+      'columns[29][search][value]' = '',
+      'columns[29][search][regex]' = 'false',
+      'columns[30][data]' = 'version',
+      'columns[30][name]' = '',
+      'columns[30][searchable]' = 'true',
+      'columns[30][orderable]' = 'false',
+      'columns[30][search][value]' = '',
+      'columns[30][search][regex]' = 'false',
+      'columns[31][data]' = 'remark',
+      'columns[31][name]' = '',
+      'columns[31][searchable]' = 'true',
+      'columns[31][orderable]' = 'false',
+      'columns[31][search][value]' = '',
+      'columns[31][search][regex]' = 'false',
+      'columns[32][data]' = 'createDatetime',
+      'columns[32][name]' = '',
+      'columns[32][searchable]' = 'true',
+      'columns[32][orderable]' = 'true',
+      'columns[32][search][value]' = '',
+      'columns[32][search][regex]' = 'false',
+      'columns[33][data]' = 'updateDatetime',
+      'columns[33][name]' = '',
+      'columns[33][searchable]' = 'true',
+      'columns[33][orderable]' = 'true',
+      'columns[33][search][value]' = '',
+      'columns[33][search][regex]' = 'false',
+      'order[0][column]' = '33',
+      'order[0][dir]' = 'desc',
+      'start' = start_num,
+      'length' = length,
+      'search[value]' = '',
+      'search[regex]' = 'false',
+      'startCreateDatetime' = s_time,
+      'endCreateDatetime' = e_time
+    )
+    res <- postForm(
+      uri = 'http://172.18.32.14:8080/ncc-oms/repay_reform/repayChannelInfoRouteLog/listPage',
+      style = 'POST',
+      curl = handle,
+      .params = form
+    )
+    return(res)
+  }
+
+get_res <-
+  get_reroute_data(start_time,
+                   end_time,
+                   start_num,
+                   length,
+                   handle,
+                   draw)
 
 
+json_result <- fromJSON(get_res)
+response_code <- json_result$code
+total <- json_result$total
+tmp <- json_result$rows
+result <- rbind(result, tmp)
+loop_time <- total %/% length + ifelse(total %% length > 0, 1, 0)
+cat('共', total, '条数据，分', loop_time, '次完成，目前为第1次')
+if (loop_time > 1) {
+  for (i in 1:(loop_time - 1)) {
+    draw <- as.character(i)
+    start_num <- i * length
+    get_res <-
+      get_reroute_data(start_time,
+                       end_time,
+                       start_num,
+                       length,
+                       handle,
+                       draw)
+    json_result <- fromJSON(get_res)
+    response_code <- json_result$code
+    total <- json_result$total
+    tmp <- json_result$rows
+    result <- rbind(result, tmp)
+    cat('共', total, '条数据，分', loop_time, '次完成，目前为第', i + 1, '次\n')
+    Sys.sleep(1)
+  }
+}
+cat('数据下载完成\n')
+result_reroute_list<-result
+result_reroute_list$version<-'reroute_ori'
+result<-data.frame()
 
 getdata <-
   function(s_time,
@@ -349,6 +618,9 @@ cat('数据下载完成\n')
 #     by.y = c('bankCode'),
 #     all.x = T
 #   )
+result[which(result$cApplyId%in%result_reroute_list$cApplyId),]$version<-'reroute'
+
+result<-rbind(result,result_reroute_list[,names(result_reroute_list)[names(result_reroute_list)%in%names(result)]])
 result$bankName_uni<-result$bankName
 result[grep('.*建设.*',result$bankName),]$bankName_uni<-'建设银行'
 result[grep('.*工商*',result$bankName),]$bankName_uni<-'工商银行'
@@ -380,33 +652,39 @@ result$crea_time <-
   as.POSIXct(as.numeric(result$createDatetime) / 1000, origin = "1970-01-01 00:00:00")
 result$req_time <-
   as.POSIXct(as.numeric(result$requestDatetime) / 1000, origin = "1970-01-01 00:00:00")
-result$noti_time <-
-  as.POSIXct(as.numeric(result$updateDatetime) / 1000, origin = "1970-01-01 00:00:00")
-result$noti_time[which(!result$status %in% c('80', '90'))] <-
+result$respon_time <-
+  as.POSIXct(as.numeric(result$responseDatetime) / 1000, origin = "1970-01-01 00:00:00")
+result$respon_time[which(!result$status %in% c('80', '90'))] <-
   Sys.time()
-result$take_time <- result$noti_time - result$crea_time
+result$take_time <- result$respon_time - result$req_time
 
 # result$noti_time <-
 #   as.POSIXct(paste(result$transDate,result$transTime,sep=''), origin = "1970-01-01 00:00:00")
 # result$noti_time <-
 #   paste(result$transDate,result$transTime,sep='')
-
-result <-
-  subset(result, result$repayType %in% c('RT01'))#####选实时:RT01 or批扣::RT02
-
-result<-subset(result,!result$status%in%c('00','10'))
-
+result<-subset(result,!result$status%in%c('00','10','20'))
 result$group <-
   cut(as.numeric(result$take_time), split, label)##划分耗时区间
-result_reroute<-subset(result,result$remark=='重路由PCS')
+result_reroute<-subset(result,result$cApplyId%in%result_reroute_list$cApplyId&result$version!='reroute_ori')##只选择重路由后的部分！！！
+result <-
+  subset(result, result$repayType %in% c('RT01'))#####再一次校验选实时:RT01 or批扣::RT02
+result_for_16<-subset(result,result$version!='reroute_ori')##选择重路由后的+未重路由的！！！
+result<-subset(result,!result$cApplyId%in%result_reroute_list$cApplyId|result$version=='reroute_ori')##选择重路由前的+未重路由的！！！
+result_for_16<-merge(result_for_16,result[which(result$version=='reroute_ori'),c('cApplyId','channelId')],by='cApplyId',all.x=T)
+names(result_for_16)[which(names(result_for_16)=='channelId.y')]<-'capcode'
+names(result_for_16)[which(names(result_for_16)=='channelId.x')]<-'channelId'
+result_for_16[which(result_for_16$version!='reroute'),]$capcode<-result_for_16[which(result_for_16$version!='reroute'),]$channelId
 result <-
   subset(result, !result$channelId %in% c('PCS'))#####筛选不为PCS代扣的
-
 res_ag <-
   aggregate(result$idNo,
             list(result$bankName_uni, result$channelId, result$status),
             length)
 res_ag <- dcast(res_ag, Group.1 + Group.2 ~ Group.3, value.var = "x")
+if(!'80'%in%names(res_ag)){
+  res_ag$`80`<-0
+  
+}
 ##res_ag[is.na(res_ag$`10`), ]$`10` <- 0
 res_ag[is.na(res_ag$`80`), ]$`80` <- 0
 res_ag[is.na(res_ag$`90`), ]$`90` <- 0
@@ -440,6 +718,9 @@ res_ag_c<-
             sum)
 res_ag_c <- dcast(res_ag_c, Group.1 + Group.2 ~ Group.3, value.var = "x")
 ##res_ag_c[is.na(res_ag_c$`10`), ]$`10` <- 0
+if(!'80'%in%names(res_ag_c)){
+  res_ag_c$`80`<-0
+}
 res_ag_c[is.na(res_ag_c$`80`), ]$`80` <- 0
 res_ag_c[is.na(res_ag_c$`90`), ]$`90` <- 0
 res_ag_c$total <-  res_ag_c$`80` + res_ag_c$`90`
@@ -511,7 +792,7 @@ write.table(
   file = paste(
     mainpath,"/table/",
     gsub('-', '', substr(start_time, 1, 10)),
-    "总体代收.csv",
+    "总体代收(请求维度).csv",
     sep = ''
   ),
   sep = ',',
@@ -558,8 +839,8 @@ ggplot(data = res_ag) +geom_line(
   ),
   shape=21,
   alpha = 0.3,
-  size = 11,
-  position = position_jitter(0.2)
+  size = 11
+  ##position = position_jitter(0.2)   去除扰动
 ) + geom_text(
   aes(
     x = res_ag$银行,
@@ -568,7 +849,7 @@ ggplot(data = res_ag) +geom_line(
     
     group = res_ag$渠道
   ),
-  position = position_jitter(0.25),
+  ##position = position_jitter(0.25),   去除扰动
   size = 4.3
 ) + scale_y_continuous(limits = c(0, 1.05), breaks = c(seq(0, 1, 0.05))) +
   theme(text = element_text(family = 'STXihei', size = 18)) + labs(
@@ -619,5 +900,18 @@ dev.off()
 res_reroute_agg<-merge(dcast(aggregate(result_reroute$idNo,list(result_reroute$bankName_uni,result_reroute$status),length),Group.1~Group.2,value.var = 'x'),dcast(aggregate(result_reroute$totalAmt,list(result_reroute$bankName_uni,result_reroute$status),sum),Group.1~Group.2,value.var = 'x'),all = T,by='Group.1')
 res_reroute_agg<-res_reroute_agg[,c(1,2,4,3,5)]
 res_reroute_agg[is.na(res_reroute_agg)]<-0
+res_reroute_agg<-arrange(res_reroute_agg,-res_reroute_agg$`90.x`)
+res_reroute_agg<-rbind( res_reroute_agg,cbind(list(Group.1='总计'),summarise(res_reroute_agg,`80.x`=sum(`80.x`),`80.y`=sum(`80.y`),`90.x`=sum(`90.x`),`90.y`=sum(`90.y`))))
 res_reroute_agg$rate<-res_reroute_agg$`90.x`/(res_reroute_agg$`90.x`+res_reroute_agg$`80.x`)
 names(res_reroute_agg)<-c('银行','失败数','失败金额','成功数','成功金额','成功率')
+write.table(
+  res_reroute_agg,
+  file = paste(
+    mainpath,"/table/",
+    gsub('-', '', substr(start_time, 1, 10)),
+    "重路由结果.csv",
+    sep = ''
+  ),
+  sep = ',',
+  row.names = F
+)

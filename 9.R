@@ -5,9 +5,9 @@ library(jsonlite)
 library(reshape2)
 library(scales)
 mainpath<-"D:/Rworkplace"##存储路径
-start_time <- '2018-11-16 00:00:00'
+start_time <- '2018-12-04 00:00:00'
 end_time <-
-  '2018-11-17 00:00:00'  ####format(Sys.time(), format = '%Y-%m-%d+%H:%M:%S')  #######
+  '2018-12-05 00:00:00'  ####format(Sys.time(), format = '%Y-%m-%d+%H:%M:%S')  #######
 loop_time <- NA
 start_num <- 0
 length <- 5000
@@ -22,7 +22,7 @@ handle <-
       Connection = 'keep-alive',
       # 'Content-Length' = '',
       'Content-Type' = 'application/x-www-form-urlencoded; charset=UTF-8',
-      Cookie = 'JSESSIONID=1D0C2256A70BD1F90CBF40900D7361F8; theme=theme_base; userName=%E6%9D%8E%E9%95%BF%E5%85%B4; token=66d46edcecb7a82aa5eb1cc44f170a67; userId=s00580; userType=CBUSER',
+      Cookie = 'JSESSIONID=D6AD011322E8CD114E605D036B92D447; theme=theme_base; userName=%E6%9D%8E%E9%95%BF%E5%85%B4; token=d84561838c24ec961a75570bcbd87f88; userId=s00580; userType=CBUSER',
       Referer = 'http://172.18.32.14:8080/ncc-oms/repayapply/repayApplyPage?token=a25b085949531e494c422dccc17638b6&userId=s00580&userType=CBUSER&userName=%E6%9D%8E%E9%95%BF%E5%85%B4',
       Host = '172.18.32.14:8080',
       'X-Requested-With' = 'XMLHttpRequest'
